@@ -1,22 +1,29 @@
 import { Component } from 'react';
+import { save, load } from 'utils';
 import { MainTitle } from './Phonebook.styled';
 import { Section } from 'components/Section';
 import { ContactForm } from 'components/ContactForm';
 import { ContactList } from 'components/ContactList';
 import { Filter } from 'components/Filter';
 
-const initialContacts = [
-  { id: 'id-1', name: 'Rosie Simpson', number: '459-12-56' },
-  { id: 'id-2', name: 'Hermione Kline', number: '443-89-12' },
-  { id: 'id-3', name: 'Eden Clements', number: '645-17-79' },
-  { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
-];
+const STORAGE_KEY = 'contacts';
 
 export class Phonebook extends Component {
   state = {
-    contacts: [...initialContacts],
+    contacts: [],
     filter: '',
   };
+
+  componentDidMount() {
+    const contacts = load(STORAGE_KEY);
+    this.setState({ contacts });
+  }
+
+  componentDidUpdate(_, { contacts }) {
+    if (contacts !== this.state.contacts) {
+      save(STORAGE_KEY, this.state.contacts);
+    }
+  }
 
   handleSubmit = addedContact => {
     const isInContacts = this.state.contacts.find(
